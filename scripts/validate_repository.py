@@ -10,7 +10,7 @@ import zipfile
 
 
 EXPECTED = {
-    "plugin.video.soap4.me": "1.3.0",
+    "plugin.video.soap4.me": "1.3.1",
     "plugin.video.soap4-py2.me": None,
     "service.xbmc.soap4me": None,
     "repository.choupacca.soap4me": "1.0.1",
