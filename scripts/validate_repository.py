@@ -18,7 +18,7 @@ EXPECTED = {
 BASE_URL = "https://choupacca.github.io/Kodi-repo/"
 INSTALLER = (
     "repository.choupacca.soap4me/"
-    "repository.choupacca.soap4me-1.0.0.zip"
+    "repository.choupacca.soap4me-1.0.1.zip"
 )
 
 
