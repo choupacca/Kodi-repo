@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="repository.choupacca.soap4me"
+       name="Choupacca Soap4me Repository"
+       version="1.0.1"
+       provider-name="choupacca">
+  <extension point="xbmc.addon.repository" name="Choupacca Soap4me Repository">
+    <dir>
+      <info>https://choupacca.github.io/Kodi-repo/addons.xml</info>
+      <checksum>https://choupacca.github.io/Kodi-repo/addons.xml.md5</checksum>
+      <datadir zip="true">https://choupacca.github.io/Kodi-repo/</datadir>
+    </dir>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">Install Soap4me add-ons from the Choupacca repository</summary>
+    <description lang="en_GB">Repository for the Python 3 and legacy Soap4me add-ons.</description>
+    <platform>all</platform>
+    <license>GPL-2.0-only</license>
+  </extension>
+</addon>
