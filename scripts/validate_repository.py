@@ -10,7 +10,7 @@ import zipfile
 
 
 EXPECTED = {
-    "plugin.video.soap4.me": "1.3.0",
+    "plugin.video.soap4.me": "1.3.1",
     "plugin.video.soap4-py2.me": None,
     "service.xbmc.soap4me": None,
     "repository.choupacca.soap4me": "1.0.1",
@@ -41,7 +41,7 @@ def main(raw_site):
         if version is not None:
             assert addons[addon_id].get("version") == version
 
-    assert (site / "plugin.video.soap4.me/plugin.video.soap4.me-1.3.0.zip").is_file()
+    assert (site / "plugin.video.soap4.me/plugin.video.soap4.me-1.3.1.zip").is_file()
     assert (site / INSTALLER).is_file()
 
     for archive in site.glob("*/*.zip"):
