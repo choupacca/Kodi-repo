@@ -57,16 +57,20 @@ def main(raw_site):
         "extension[@point='xbmc.addon.repository']"
     )
     assert repo is not None
+
+    directory = repo.find("dir")
+    assert directory is not None
+
     for element, expected in (
         ("info", "addons.xml"),
         ("checksum", "addons.xml.md5"),
         ("datadir", ""),
     ):
-        node = repo.find(element)
+        node = directory.find(element)
         assert node is not None and node.text == BASE_URL + expected
         relative = urllib.parse.urlparse(node.text).path.removeprefix("/Kodi-repo/")
         assert (site / relative).exists()
-    assert repo.find("datadir").get("zip") == "true"
+    assert directory.find("datadir").get("zip") == "true"
 
     page = (site / "index.html").read_text(encoding="utf-8")
     assert f'href="{INSTALLER}"' in page
