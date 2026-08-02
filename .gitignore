@@ -85,5 +85,8 @@ ENV/
 # Spyder project settings
 .spyderproject
 
+# GitHub Pages build output
+_site/
+
 # Rope project settings
 .ropeproject

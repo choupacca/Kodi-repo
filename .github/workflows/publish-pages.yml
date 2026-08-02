@@ -1,0 +1,68 @@
+name: Build and publish Kodi repository
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install generator dependency
+        run: python -m pip install GitPython
+      - name: Compile-check generator and validator
+        run: python -m py_compile create_repository.py scripts/validate_repository.py
+      - name: Build repository
+        run: ./run.sh _site
+      - name: Validate generated repository
+        run: python scripts/validate_repository.py _site
+      - name: Check for introduced secrets
+        shell: bash
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+            BASE_SHA="HEAD^"
+          fi
+          ! git diff --unified=0 "$BASE_SHA" HEAD -- \
+            | grep -Eai '(BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|password[[:space:]]*[:=]|(api[_-]?key|token)[[:space:]]*[:=][[:space:]]*["'\''`]?[A-Za-z0-9_/-]{16,})'
+      - name: Check source tree cleanliness
+        run: |
+          git diff --check
+          test -z "$(git status --short --untracked-files=all)"
+      - name: Upload Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
