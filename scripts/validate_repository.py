@@ -13,12 +13,12 @@ EXPECTED = {
     "plugin.video.soap4.me": "1.3.0",
     "plugin.video.soap4-py2.me": None,
     "service.xbmc.soap4me": None,
-    "repository.choupacca.soap4me": "1.0.0",
+    "repository.choupacca.soap4me": "1.0.1",
 }
 BASE_URL = "https://choupacca.github.io/Kodi-repo/"
 INSTALLER = (
     "repository.choupacca.soap4me/"
-    "repository.choupacca.soap4me-1.0.0.zip"
+    "repository.choupacca.soap4me-1.0.1.zip"
 )
 
 
@@ -57,16 +57,20 @@ def main(raw_site):
         "extension[@point='xbmc.addon.repository']"
     )
     assert repo is not None
+
+    directory = repo.find("dir")
+    assert directory is not None
+
     for element, expected in (
         ("info", "addons.xml"),
         ("checksum", "addons.xml.md5"),
         ("datadir", ""),
     ):
-        node = repo.find(element)
+        node = directory.find(element)
         assert node is not None and node.text == BASE_URL + expected
         relative = urllib.parse.urlparse(node.text).path.removeprefix("/Kodi-repo/")
         assert (site / relative).exists()
-    assert repo.find("datadir").get("zip") == "true"
+    assert directory.find("datadir").get("zip") == "true"
 
     page = (site / "index.html").read_text(encoding="utf-8")
     assert f'href="{INSTALLER}"' in page
