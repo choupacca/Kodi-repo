@@ -10,20 +10,24 @@ import zipfile
 
 
 EXPECTED = {
-    "plugin.video.soap4.me": "1.3.1",
-    "plugin.video.soap4-py2.me": None,
-    "service.xbmc.soap4me": None,
-    "repository.choupacca.soap4me": "1.0.1",
+    "plugin.video.soap4.me",
+    "plugin.video.soap4-py2.me",
+    "service.xbmc.soap4me",
+    "repository.choupacca.soap4me",
 }
 BASE_URL = "https://choupacca.github.io/Kodi-repo/"
-INSTALLER = (
-    "repository.choupacca.soap4me/"
-    "repository.choupacca.soap4me-1.0.1.zip"
-)
 
 
 def digest(path):
     return hashlib.md5(path.read_bytes()).hexdigest()
+
+
+def archive_path(site, addons, addon_id):
+    version = addons[addon_id].get("version")
+    assert version is not None, addon_id
+    relative = pathlib.Path(addon_id, f"{addon_id}-{version}.zip")
+    assert (site / relative).is_file(), relative
+    return relative
 
 
 def main(raw_site):
@@ -36,13 +40,10 @@ def main(raw_site):
         ET.parse(metadata)
 
     addons = {addon.get("id"): addon for addon in catalog.findall("addon")}
-    assert set(addons) == set(EXPECTED), (set(addons), set(EXPECTED))
-    for addon_id, version in EXPECTED.items():
-        if version is not None:
-            assert addons[addon_id].get("version") == version
+    assert set(addons) == EXPECTED, (set(addons), EXPECTED)
 
-    assert (site / "plugin.video.soap4.me/plugin.video.soap4.me-1.3.1.zip").is_file()
-    assert (site / INSTALLER).is_file()
+    archive_path(site, addons, "plugin.video.soap4.me")
+    installer = archive_path(site, addons, "repository.choupacca.soap4me")
 
     for archive in site.glob("*/*.zip"):
         addon_id = archive.parent.name
@@ -73,7 +74,7 @@ def main(raw_site):
     assert directory.find("datadir").get("zip") == "true"
 
     page = (site / "index.html").read_text(encoding="utf-8")
-    assert f'href="{INSTALLER}"' in page
+    assert f'href="{installer.as_posix()}"' in page
     assert (site / ".nojekyll").is_file()
 
 
